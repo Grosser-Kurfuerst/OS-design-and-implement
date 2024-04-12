@@ -13,7 +13,9 @@ _start:
   lgdt gdt_desc  # loading gdt
 
   # TODO: Lab1-2, set the lowest bit of cr0
-
+  movl %cr0, %eax
+  orb $0x1, %al
+  movl %eax, %cr0
   ljmp $0x08, $start32 # reload code segment selector and ljmp to start32
 
 .code32
@@ -41,8 +43,13 @@ gdt: # 8 bytes for each table entry, at least 1 entry
   .byte 0, 0, 0, 0
 
   # TODO: Lab1-2, code segment entry
-
+  .word 0xffff      # limit
+  .word 0           # base
+  .byte 0, 0x9a, 0xcf, 0
   # TODO: Lab1-2, data segment entry
+  .word 0xffff      # limit
+  .word 0           # base
+  .byte 0, 0x92, 0xcf, 0
 
 gdt_desc: # 6 bytes in total
   .word (gdt_desc - gdt - 1) # sizeof(gdt) - 1

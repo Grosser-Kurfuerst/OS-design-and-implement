@@ -1,7 +1,7 @@
 #include "klib.h"
 #include "cte.h"
 
-//#define EXCEPTION_DEBUG // uncomment me if need
+#define EXCEPTION_DEBUG // uncomment me if need
 
 #ifdef EXCEPTION_DEBUG
 

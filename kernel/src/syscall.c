@@ -14,12 +14,12 @@ extern void *syscall_handle[NR_SYS];
 
 void do_syscall(Context *ctx) {
   // TODO: Lab1-5 call specific syscall handle and set ctx register
-  int sysnum = 0;
-  uint32_t arg1 = 0;
-  uint32_t arg2 = 0;
-  uint32_t arg3 = 0;
-  uint32_t arg4 = 0;
-  uint32_t arg5 = 0;
+  int sysnum = ctx->eax;
+  uint32_t arg1 = ctx->ebx;
+  uint32_t arg2 = ctx->ecx;
+  uint32_t arg3 = ctx->edx;
+  uint32_t arg4 = ctx->esi;
+  uint32_t arg5 = ctx->edi;
   int res;
   if (sysnum < 0 || sysnum >= NR_SYS) {
     res = -1;
@@ -46,7 +46,9 @@ int sys_brk(void *addr) {
   if (brk == 0) {
     brk = new_brk;
   } else if (new_brk > brk) {
-    TODO();
+    PD *cur = vm_curr();
+    vm_map(cur, brk, new_brk-brk, 7);
+    brk = new_brk;
   } else if (new_brk < brk) {
     // can just do nothing
   }
@@ -54,11 +56,30 @@ int sys_brk(void *addr) {
 }
 
 void sys_sleep(int ticks) {
-  TODO(); // Lab1-7
+  // TODO(); // Lab1-7
+  uint32_t now = get_tick();
+  while (get_tick() < now + ticks) {
+    sti(); 
+    hlt(); 
+    cli();
+  }
+  
 }
 
 int sys_exec(const char *path, char *const argv[]) {
-  TODO(); // Lab1-8, Lab2-1
+  //TODO(); // Lab1-8, Lab2-1
+  PD *pd = vm_alloc();
+  Context ctx;
+  int ret = load_user(pd, &ctx, path, argv);
+  if (ret != 0) {
+    kfree(pd);
+    return -1;
+  }
+  PD *now_pd = vm_curr();
+  set_cr3(pd);
+  kfree(now_pd);
+  irq_iret(&ctx);
+  return 0;
 }
 
 int sys_getpid() {
