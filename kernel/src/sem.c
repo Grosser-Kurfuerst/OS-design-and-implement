@@ -21,7 +21,7 @@ void sem_v(sem_t *sem) {
   // Lab2-4: inc sem's value, if value<=0, dequeue a proc from waitlist and ready it
   // TODO();
   sem->value++;
-  if (sem <= 0) {
+  if (sem->value <= 0) {
     proc_addready(list_dequeue(&sem->wait_list));
   }
 }

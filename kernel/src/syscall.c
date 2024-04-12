@@ -116,14 +116,8 @@ int sys_wait(int *status) {
     return -1;
   }
 
-  proc_t* zombie;
-  while(1){
-    zombie = proc_findzombie(proc_curr());
-    if(zombie != NULL) {
-      break;
-    }
-    proc_yield();
-  }
+  sem_p(&proc_curr()->zombie_sem);
+  proc_t* zombie = proc_findzombie(proc_curr());
 
   if(status != NULL){
     *status = zombie->exit_code;

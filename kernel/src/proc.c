@@ -15,6 +15,7 @@ void init_proc() {
   curr->pgdir = vm_curr();
   pcb[0].kstack = (void*)(KER_MEM - PGSIZE);
   // Lab2-4, init zombie_sem
+  sem_init(&pcb[0].zombie_sem, 0);
   // Lab3-2, set cwd
 }
 
@@ -40,7 +41,7 @@ proc_t *proc_alloc() {
   free_pcb->ctx = &(free_pcb->kstack->ctx);
   free_pcb->child_num = 0;
   free_pcb->parent = NULL;
-
+  sem_init(&free_pcb->zombie_sem, 0);
   return free_pcb;
   // init ALL attributes of the pcb
 }
@@ -95,9 +96,7 @@ void proc_copycurr(proc_t *proc) {
 
 void proc_makezombie(proc_t *proc, int exitcode) {
   // Lab2-3: mark proc ZOMBIE and record exitcode, set children's parent to NULL
-  // Lab2-5: close opened usem
-  // Lab3-1: close opened files
-  // Lab3-2: close cwd
+  
   //TODO();
   proc->status = ZOMBIE;
   proc->exit_code = exitcode;
@@ -107,6 +106,16 @@ void proc_makezombie(proc_t *proc, int exitcode) {
       pcb[i].parent = NULL;
     }
   }
+
+  if(proc->parent != NULL) {
+    sem_v(&proc->parent->zombie_sem);
+  }
+  
+  // Lab2-5: close opened usem
+
+  // Lab3-1: close opened files
+  // Lab3-2: close cwd
+
 }
 
 proc_t *proc_findzombie(proc_t *proc) {

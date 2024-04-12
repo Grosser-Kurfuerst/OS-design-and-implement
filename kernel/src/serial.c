@@ -39,7 +39,7 @@ static void push_back(char ch) {
   buffer[tail++ % BUFFER_SIZE] = ch;
   // TODO: Lab2-4 V(sem) tail-clapboard times if ch=='\n'
   if (ch == '\n') {
-    for (int i = 0; i < tail - clapboard; i++) {
+    for (size_t i = 0; i < tail - clapboard; i++) {
       sem_v(&serial_sem);
     }
     clapboard = tail;
