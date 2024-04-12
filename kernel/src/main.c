@@ -18,7 +18,7 @@ int main()
   init_page(); // uncomment me at Lab1-4
   init_cte();  // uncomment me at Lab1-5
   init_timer(); // uncomment me at Lab1-7
-  // init_proc(); // uncomment me at Lab2-1
+  init_proc(); // uncomment me at Lab2-1
   // init_dev(); // uncomment me at Lab3-1
   printf("Hello from OS!\n");
   init_user_and_go();
@@ -40,14 +40,41 @@ void init_user_and_go()
   // set_cr3(pgdir);
   // stack_switch_call((void *)(USR_MEM - 16), (void *)eip, 0);
 
-  PD *pgdir = vm_alloc();
-  Context ctx;
-  char *argv[] = {"sh1", NULL};
-  // char *argv[] = {"echo", "hello", "world", NULL};
-  assert(load_user(pgdir, &ctx, "sh1", argv) == 0);
-  set_cr3(pgdir);
-  set_tss(KSEL(SEG_KDATA), (uint32_t)kalloc() + PGSIZE);
-  irq_iret(&ctx);
+  // PD *pgdir = vm_alloc();
+  // Context ctx;
+  // char *argv[] = {"sh1", NULL};
+  // // char *argv[] = {"echo", "hello", "world", NULL};
+  // // char *argv[] = {NULL};
+  // assert(load_user(pgdir, &ctx, "sh1", argv) == 0);
+  // set_cr3(pgdir);
+  // set_tss(KSEL(SEG_KDATA), (uint32_t)kalloc() + PGSIZE);
+  // irq_iret(&ctx);
+
+  // proc_t *proc = proc_alloc();
+  // assert(proc);
+  // char *argv[] = {"sh1", NULL};
+  // assert(load_user(proc->pgdir, proc->ctx, "sh1", argv) == 0);
+  // proc_addready(proc);
+  // sti();
+  // while (1);
+
+  // proc_run(proc);
+
+  proc_t *proc = proc_alloc();
+  assert(proc);
+  char *argv[] = {"ping1", "114514", NULL};
+  assert(load_user(proc->pgdir, proc->ctx, "ping2", argv) == 0);
+  proc_addready(proc);
+
+  proc = proc_alloc();
+  assert(proc);
+  argv[1] = "1919810";
+  assert(load_user(proc->pgdir, proc->ctx, "ping2", argv) == 0);
+  proc_addready(proc);
+
+  sti();
+  while (1);
+
 
 
 
