@@ -93,15 +93,46 @@ void sys_yield() {
 }
 
 int sys_fork() {
-  TODO(); // Lab2-2
+  //TODO(); // Lab2-2
+  proc_t *pcb = proc_alloc();
+  if (pcb == NULL) {
+    return -1;
+  }
+  proc_copycurr(pcb);
+  proc_addready(pcb);
+  return pcb->pid;
 }
 
 void sys_exit(int status) {
-  TODO(); // Lab2-3
+  //TODO(); // Lab2-3
+  proc_makezombie(proc_curr(), status);
+  INT(0x81);
+  assert(0);
 }
 
 int sys_wait(int *status) {
-  TODO(); // Lab2-3, Lab2-4
+  // TODO(); // Lab2-3, Lab2-4
+  if(!proc_curr()->child_num){
+    return -1;
+  }
+
+  proc_t* zombie;
+  while(1){
+    zombie = proc_findzombie(proc_curr());
+    if(zombie != NULL) {
+      break;
+    }
+    proc_yield();
+  }
+
+  if(status != NULL){
+    *status = zombie->exit_code;
+  }
+  int pid = zombie->pid;
+  proc_free(zombie);
+  proc_curr()->child_num--;
+  return pid;
+
 }
 
 int sys_sem_open(int value) {

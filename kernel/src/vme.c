@@ -264,7 +264,15 @@ void vm_unmap(PD *pgdir, size_t va, size_t len)
 void vm_copycurr(PD *pgdir)
 {
   // Lab2-2: copy memory mapped in curr pd to pgdir
-  TODO();
+  // TODO();
+  for (size_t i = PHY_MEM; i < USR_MEM; i += PGSIZE) {
+    PTE *pte = vm_walkpte(proc_curr()->pgdir, i, 0);
+    if (pte != NULL && pte->present) {
+      vm_map(pgdir, i, PGSIZE,7);
+      void* pa = vm_walk(pgdir, i, 0);
+      memcpy(pa, (void*)(i), PGSIZE);
+    }
+  }
 }
 
 void vm_pgfault(size_t va, int errcode)

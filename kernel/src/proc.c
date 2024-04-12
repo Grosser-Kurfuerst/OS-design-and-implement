@@ -38,6 +38,8 @@ proc_t *proc_alloc() {
   free_pcb->kstack = kalloc();
   free_pcb->brk = 0;
   free_pcb->ctx = &(free_pcb->kstack->ctx);
+  free_pcb->child_num = 0;
+  free_pcb->parent = NULL;
 
   return free_pcb;
   // init ALL attributes of the pcb
@@ -80,7 +82,15 @@ void proc_copycurr(proc_t *proc) {
   // Lab2-5: dup opened usems
   // Lab3-1: dup opened files
   // Lab3-2: dup cwd
-  TODO();
+
+  // TODO();
+
+  vm_copycurr(proc->pgdir);
+  proc->brk = curr->brk;
+  *(proc->ctx) = curr->kstack->ctx;
+  proc->ctx->eax = 0;
+  proc->parent = curr;
+  curr->child_num++;
 }
 
 void proc_makezombie(proc_t *proc, int exitcode) {
@@ -88,12 +98,27 @@ void proc_makezombie(proc_t *proc, int exitcode) {
   // Lab2-5: close opened usem
   // Lab3-1: close opened files
   // Lab3-2: close cwd
-  TODO();
+  //TODO();
+  proc->status = ZOMBIE;
+  proc->exit_code = exitcode;
+
+  for (int i = 0; i < PROC_NUM; i++) {
+    if (pcb[i].parent == proc) {
+      pcb[i].parent = NULL;
+    }
+  }
 }
 
 proc_t *proc_findzombie(proc_t *proc) {
   // Lab2-3: find a ZOMBIE whose parent is proc, return NULL if none
-  TODO();
+  // TODO();
+  for (int i = 0; i < PROC_NUM; i++) {
+    if (pcb[i].parent == proc && pcb[i].status == ZOMBIE) {
+      return &pcb[i];
+    }
+  }
+  return NULL;
+
 }
 
 void proc_block() {
