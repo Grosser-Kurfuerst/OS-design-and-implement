@@ -42,6 +42,9 @@ proc_t *proc_alloc() {
   free_pcb->child_num = 0;
   free_pcb->parent = NULL;
   sem_init(&free_pcb->zombie_sem, 0);
+  for (int i = 0; i < MAX_USEM; i++) {
+    free_pcb->usems[i] = NULL;
+  }
   return free_pcb;
   // init ALL attributes of the pcb
 }
@@ -80,10 +83,6 @@ void proc_yield() {
 
 void proc_copycurr(proc_t *proc) {
   // Lab2-2: copy curr proc
-  // Lab2-5: dup opened usems
-  // Lab3-1: dup opened files
-  // Lab3-2: dup cwd
-
   // TODO();
 
   vm_copycurr(proc->pgdir);
@@ -92,6 +91,12 @@ void proc_copycurr(proc_t *proc) {
   proc->ctx->eax = 0;
   proc->parent = curr;
   curr->child_num++;
+  // Lab2-5: dup opened usems
+  for (int i = 0; i < MAX_USEM; i++) {
+    proc->usems[i] = curr->usems[i];
+  }
+  // Lab3-1: dup opened files
+  // Lab3-2: dup cwd
 }
 
 void proc_makezombie(proc_t *proc, int exitcode) {
@@ -112,7 +117,11 @@ void proc_makezombie(proc_t *proc, int exitcode) {
   }
   
   // Lab2-5: close opened usem
-
+  for (int i = 0; i < MAX_USEM; i++) {
+    if (proc->usems[i] != NULL) {
+      usem_close(proc->usems[i]);
+    }
+  }
   // Lab3-1: close opened files
   // Lab3-2: close cwd
 
@@ -138,12 +147,22 @@ void proc_block() {
 
 int proc_allocusem(proc_t *proc) {
   // Lab2-5: find a free slot in proc->usems, return its index, or -1 if none
-  TODO();
+  // TODO();
+  for (int i = 0; i < MAX_USEM; i++) {
+    if (proc->usems[i] == NULL) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 usem_t *proc_getusem(proc_t *proc, int sem_id) {
   // Lab2-5: return proc->usems[sem_id], or NULL if sem_id out of bound
-  TODO();
+  // TODO();
+  if (sem_id >= MAX_USEM) {
+    return NULL;
+  }
+  return proc->usems[sem_id];
 }
 
 int proc_allocfile(proc_t *proc) {

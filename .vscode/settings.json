@@ -2,6 +2,7 @@
     "C_Cpp.default.compilerPath": "/usr/bin/g++-11",
     "files.associations": {
         "serial.h": "c",
-        "proc.h": "c"
+        "proc.h": "c",
+        "type_traits": "c"
     }
 }

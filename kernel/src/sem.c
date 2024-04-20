@@ -31,17 +31,28 @@ static usem_t user_sem[USER_SEM_NUM] __attribute__((used));
 
 usem_t *usem_alloc(int value) {
   // Lab2-5: find a usem whose ref==0, init it, inc ref and return it, return NULL if none
-  TODO();
+  // TODO();
+  for (int i = 0; i < USER_SEM_NUM; i++) {
+    if (user_sem[i].ref == 0) {
+      sem_init(&user_sem[i].sem, value);
+      user_sem[i].ref++;
+      return &user_sem[i];
+    }
+  }
+  return NULL;
 }
 
 usem_t *usem_dup(usem_t *usem) {
   // Lab2-5: inc usem's ref
-  TODO();
+  // TODO();
+  usem->ref++;
+  return usem;
 }
 
 void usem_close(usem_t *usem) {
   // Lab2-5: dec usem's ref
-  TODO();
+  // TODO();
+  usem->ref--;
 }
 
 
