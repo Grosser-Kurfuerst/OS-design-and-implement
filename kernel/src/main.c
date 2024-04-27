@@ -19,7 +19,7 @@ int main()
   init_cte();  // uncomment me at Lab1-5
   init_timer(); // uncomment me at Lab1-7
   init_proc(); // uncomment me at Lab2-1
-  // init_dev(); // uncomment me at Lab3-1
+  init_dev(); // uncomment me at Lab3-1
   printf("Hello from OS!\n");
   init_user_and_go();
   panic("should never come back");
@@ -37,8 +37,8 @@ void init_user_and_go()
   proc_t *proc = proc_alloc();
   assert(proc);
   // char *argv[] = {"childtest", "1", "10", "1", NULL};
-  char *argv[] = {"sh", NULL};
-  assert(load_user(proc->pgdir, proc->ctx, "sh", argv) == 0);
+  char *argv[] = {"readtest", NULL};
+  assert(load_user(proc->pgdir, proc->ctx, "readtest", argv) == 0);
   proc_addready(proc);
 
   sti();
