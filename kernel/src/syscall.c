@@ -54,11 +54,11 @@ int sys_brk(void *addr) {
   size_t brk = proc_curr()->brk; // use brk of proc instead of this in Lab2-1
   size_t new_brk = PAGE_UP(addr);
   if (brk == 0) {
-    brk = new_brk;
+    proc_curr()->brk = new_brk;
   } else if (new_brk > brk) {
     PD *cur = vm_curr();
     vm_map(cur, brk, new_brk-brk, 7);
-    brk = new_brk;
+    proc_curr()->brk = new_brk;
   } else if (new_brk < brk) {
     // can just do nothing
   }

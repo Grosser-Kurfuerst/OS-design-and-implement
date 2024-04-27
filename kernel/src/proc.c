@@ -181,7 +181,7 @@ int proc_allocusem(proc_t *proc) {
 usem_t *proc_getusem(proc_t *proc, int sem_id) {
   // Lab2-5: return proc->usems[sem_id], or NULL if sem_id out of bound
   // TODO();
-  if (sem_id >= MAX_USEM) {
+  if (sem_id >= MAX_USEM || sem_id < 0) {
     return NULL;
   }
   return proc->usems[sem_id];
